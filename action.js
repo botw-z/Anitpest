@@ -8,8 +8,29 @@ const loadingIndicator = document.getElementById('loadingIndicator');
 const resultArea = document.getElementById('resultArea');
 const pestInfo = document.getElementById('pestInfo');
 
+function checkAndRequestApiKey() {
+    let API_KEY = localStorage.getItem('gemini_api_key');
+    if (!API_KEY) {
+        requestApiKey();
+    }
+    return API_KEY;
+}
+
+function requestApiKey() {
+    const API_KEY = prompt("Please enter your Gemini API key:");
+    if (API_KEY) {
+        localStorage.setItem('gemini_api_key', API_KEY);
+    }
+    return API_KEY;
+}
+
 async function detectPests(imageFile) {
     try {
+        let API_KEY = checkAndRequestApiKey();
+        if (!API_KEY) {
+            throw new Error('API key is required to analyze images');
+        }
+
         const base64Image = await new Promise((resolve, reject) => {
             const reader = new FileReader();
             reader.onload = () => resolve(reader.result.split(',')[1]);
